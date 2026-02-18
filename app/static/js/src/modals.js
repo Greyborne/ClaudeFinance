@@ -36,6 +36,33 @@ async function saveCategory(event) {
   renderSettings();
 }
 
+// Show add category modal (clear form for new entry)
+export function addCategory() {
+  // Reset form for new category
+  document.getElementById('categoryModalTitle').textContent = 'Add Category';
+  document.getElementById('categoryId').value = '';
+  document.getElementById('categoryName').value = '';
+  document.getElementById('categoryType').value = 'expense'; // or default
+  document.getElementById('categoryParent').value = '';
+  document.getElementById('categorySortOrder').value = '0';
+  document.getElementById('categoryIsParentOnly').checked = false;
+
+  // Populate parent dropdown (all possible parents of same type)
+  const parentSelect = document.getElementById('categoryParent');
+  parentSelect.innerHTML = '<option value="">-- Top Level --</option>';
+  
+  state.categories
+    .filter(c => c.category_type === 'expense') // or dynamic based on type
+    .forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat.id;
+      opt.textContent = cat.name;
+      parentSelect.appendChild(opt);
+    });
+
+  document.getElementById('addCategoryModal').classList.add('show');
+}
+
 // NEW: From original
 async function uploadFile() {
   const fileInput = document.getElementById('fileInput');

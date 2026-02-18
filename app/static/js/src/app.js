@@ -5,6 +5,7 @@ import { renderSettings } from './settings.js';
 import { initializeTransactions } from './transactions.js';
 import { initializeBudgetTable } from './budgetTable.js';
 import { setupModals } from './modals.js';
+import { addCategory } from './modals.js';  // add this line near other imports
 import { initializeDashboard } from './dashboard.js';  // NEW: Import from new file
 
 async function initializeApp() {
