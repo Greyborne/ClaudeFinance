@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 Personal Budget Manager</h1>
+            <nav>
+                <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+                <button class="tab-btn" data-tab="budget">Budget Planning</button>
+                <button class="tab-btn" data-tab="transactions">Transactions</button>
+                <button class="tab-btn" data-tab="settings">Settings</button>
+            </nav>
+        </header>
+
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard-tab" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>Budget Overview</h2>
+                    <canvas id="budgetVsActualChart"></canvas>
+                </div>
+                
+                <div class="card">
+                    <h2>Spending Trend</h2>
+                    <canvas id="spendingTrendChart"></canvas>
+                </div>
+                
+                <div class="card stats-card">
+                    <h2>Summary</h2>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Planned Expenses:</span>
+                        <span class="stat-value" id="totalPlanned">$0.00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Actual Expenses:</span>
+                        <span class="stat-value" id="totalActual">$0.00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Difference:</span>
+                        <span class="stat-value" id="totalDiff">$0.00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Uncategorized Transactions:</span>
+                        <span class="stat-value" id="uncategorizedCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BUDGET PLANNING TAB -->
+        <div id="budget-tab" class="tab-content">
+            <div class="toolbar">
+                <button class="btn btn-primary" id="addCategoryBtn">Add Category</button>
+                <button class="btn btn-secondary" id="generatePeriodsBtn">Generate Pay Periods</button>
+                <button class="btn btn-success" id="applyTemplatesBtn">Apply Templates</button>
+            </div>
+            
+            <div class="budget-table-container">
+                <table id="budgetTable" class="budget-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <!-- Pay period columns will be added dynamically -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Budget rows will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TRANSACTIONS TAB -->
+        <div id="transactions-tab" class="tab-content">
+            <div class="toolbar">
+                <button class="btn btn-primary" id="importTransactionsBtn">Import from Bank CSV</button>
+                <button class="btn btn-secondary" id="addTransactionBtn">Add Manual Transaction</button>
+                <label class="filter-label">
+                    Show:
+                    <select id="transactionFilter">
+                        <option value="all">All Transactions</option>
+                        <option value="uncategorized">Uncategorized Only</option>
+                        <option value="categorized">Categorized Only</option>
+                    </select>
+                </label>
+            </div>
+            
+            <div class="transactions-container">
+                <table id="transactionsTable" class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Category</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Transactions will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="settings-tab" class="tab-content">
+            <div class="settings-grid">
+                <div class="card">
+                    <h2>Categories</h2>
+                    <div class="category-lists">
+                        <div>
+                            <h3>Expense Categories</h3>
+                            <div id="expenseCategoriesList"></div>
+                            <button class="btn btn-sm btn-primary" id="addExpenseCategoryBtn">Add Expense Category</button>
+                        </div>
+                        <div>
+                            <h3>Income Categories</h3>
+                            <div id="incomeCategoriesList"></div>
+                            <button class="btn btn-sm btn-primary" id="addIncomeCategoryBtn">Add Income Category</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>Auto-Categorization Rules</h2>
+                    <div id="categoryRulesList"></div>
+                    <button class="btn btn-sm btn-primary" id="addRuleBtn">Add Rule</button>
+                </div>
+                
+                <div class="card">
+                    <h2>Recurring Templates</h2>
+                    <div id="recurringTemplatesList"></div>
+                    <button class="btn btn-sm btn-primary" id="addTemplateBtn">Add Template</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NEW: Add Category Modal -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="categoryModalTitle">Add Category</h2>
+            <form id="categoryForm">
+                <input type="hidden" id="categoryId">
+                <input type="hidden" id="categoryType">
+                
+                <div class="form-group">
+                    <label for="categoryName">Category Name:</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryParent">Parent Category (optional):</label>
+                    <select id="categoryParent">
+                        <option value="">-- Top Level Category --</option>
+                    </select>
+                </div>
+                <!-- NEW: Parent-only checkbox -->
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="categoryIsParentOnly">
+                        Parent Category Only (cannot assign transactions)
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categorySortOrder">Sort Order:</label>
+                    <input type="number" id="categorySortOrder" value="0">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" id="cancelCategoryBtn">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- File Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Import Bank Transactions</h2>
+            <p>Upload a CSV or Excel file from your bank</p>
+            <input type="file" id="fileInput" accept=".csv,.xlsx,.xls">
+            <button class="btn btn-primary" id="uploadFileBtn">Upload</button>
+        </div>
+    </div>
+    <script type="module" src="{{ url_for('static', filename='js/src/app.js') }}"></script>
+</body>
+</html>
