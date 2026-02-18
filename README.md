@@ -13,7 +13,7 @@ A self-hosted, single-page budgeting tool with categories, pay periods, planned 
 
 ## Directory structure
 
-```bash
+```text
 ├── app/
 │   ├── init.py
 │   ├── models.py                # DB models: BudgetCategory, PayPeriod, PlannedAmount, Transaction, etc.
