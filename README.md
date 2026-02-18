@@ -15,7 +15,7 @@ A self-hosted, single-page budgeting tool with categories, pay periods, planned 
 
 ```text
 ├── app/
-│   ├── init.py
+│   ├── __init__.py
 │   ├── models.py                # DB models: BudgetCategory, PayPeriod, PlannedAmount, Transaction, etc.
 │   ├── routes.py                # All API endpoints (/api/categories, /api/planned-amounts, analytics, etc.)
 │   ├── static/
@@ -85,21 +85,21 @@ flask db downgrade        # Roll back last migration (careful!)
 
 # Development notes
 
-The new modular frontend is in app/static/js/src/
-The entry point is app/static/js/src/app.js (loaded via <script type="module"> in index.html)
-The old single-file version remains in app/static/js/app.js (for reference / rollback)
-All API calls are prefixed with /api (handled in routes.py)
-Database schema changes → make model changes → run flask db migrate → commit the new migration file
+* The new modular frontend is in $${\color{orange}\textsf{app/static/js/src/}}$$
+* The entry point is $${\color{orange}\textsf{app/static/js/src/app.js}}$$ (loaded via <script type="module"> in index.html)
+* The old single-file version remains in $${\color{orange}\textsf{app/static/js/app.js}}$$ (for reference / rollback)
+* All API calls are prefixed with $${\color{orange}\textsf{/api}}$$ (handled in $${\color{orange}\textsf{routes.py}}$$)
+* Database schema changes → make model changes → run flask db migrate → commit the new migration file
 
 # Planned / in-progress features
 
-Finish modular JS migration (dashboard charts, utils)
-Recurring expense templates with auto-population across pay periods
-Budget rollover / carryover logic
-Mobile/responsive layout improvements
-CSV import preview + manual category mapping
-Export budget reports (CSV / PDF)
-Dark mode toggle
+* Finish modular JS migration (dashboard charts, utils)
+* Recurring expense templates with auto-population across pay periods
+* Budget rollover / carryover logic
+* Mobile/responsive layout improvements
+* CSV import preview + manual category mapping
+* Export budget reports (CSV / PDF)
+* Dark mode toggle
 
 Feedback, suggestions, and pull requests are very welcome!
 Charles — Topeka, KS
