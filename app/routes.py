@@ -462,40 +462,41 @@ def apply_recurring_template(template_id):
 
 # ==================== ANALYTICS ====================
 
-@main.route('/api/analytics/budget-vs-actual')
+@main.route('/api/analytics/budget-vs-actual', methods=['GET'])
 def budget_vs_actual():
-    """Get budget vs actual spending by category"""
-    from sqlalchemy import func
-    
-    # Get planned totals by category
-    planned_query = db.session.query(
-        BudgetCategory.id,
-        BudgetCategory.name,
-        BudgetCategory.category_type,
-        func.sum(PlannedAmount.amount).label('planned_total')
-    ).join(PlannedAmount).group_by(BudgetCategory.id).all()
-    
-    # Get actual totals by category
-    actual_query = db.session.query(
-        BudgetCategory.id,
-        func.sum(Transaction.amount).label('actual_total')
-    ).join(Transaction).group_by(BudgetCategory.id).all()
-    
-    actual_dict = {row.id: float(row.actual_total) for row in actual_query}
-    
-    results = []
-    for row in planned_query:
-        results.append({
-            'category_id': row.id,
-            'category_name': row.name,
-            'category_type': row.category_type,
-            'planned': float(row.planned_total),
-            'actual': actual_dict.get(row.id, 0),
-            'difference': float(row.planned_total) - actual_dict.get(row.id, 0)
-        })
-    
-    return jsonify(results)
+    # Aggregate totals
+    planned_total = db.session.query(db.func.sum(PlannedAmount.amount)).scalar() or 0.0
+    actual_total = db.session.query(db.func.sum(Transaction.amount)).filter(
+        Transaction.amount < 0
+    ).scalar() or 0.0
 
+    # Per-category data
+    # This is a simplified query - adjust joins/group_by as needed
+    from sqlalchemy import func
+    results = db.session.query(
+        BudgetCategory.name.label('category_name'),
+        BudgetCategory.id.label('category_id'),
+        func.sum(PlannedAmount.amount).label('planned'),
+        func.sum(func.case([(Transaction.amount < 0, Transaction.amount)], else_=0)).label('actual')
+    ).outerjoin(PlannedAmount, PlannedAmount.category_id == BudgetCategory.id
+    ).outerjoin(Transaction, Transaction.category_id == BudgetCategory.id
+    ).filter(BudgetCategory.category_type == 'expense'
+    ).group_by(BudgetCategory.id, BudgetCategory.name
+    ).all()
+
+    categories = [{
+        'category_name': r.category_name,
+        'category_id': r.category_id,
+        'planned': float(r.planned or 0),
+        'actual': float(r.actual or 0)
+    } for r in results]
+
+    return jsonify({
+        'planned_total': float(planned_total),
+        'actual_total': float(actual_total),
+        'difference': float(planned_total - actual_total),
+        'categories': categories
+    })
 
 @main.route('/api/analytics/spending-trend')
 def spending_trend():
