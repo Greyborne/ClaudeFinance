@@ -25,8 +25,6 @@ def index():
 
 # ==================== CATEGORY MANAGEMENT ====================
 
-# ==================== CATEGORY MANAGEMENT ====================
-
 @main.route('/api/categories', methods=['GET', 'POST'])
 def manage_categories():
     """Get all categories or create a new one"""
@@ -464,20 +462,20 @@ def apply_recurring_template(template_id):
 
 @main.route('/api/analytics/budget-vs-actual', methods=['GET'])
 def budget_vs_actual():
-    # Aggregate totals
-    planned_total = db.session.query(db.func.sum(PlannedAmount.amount)).scalar() or 0.0
-    actual_total = db.session.query(db.func.sum(Transaction.amount)).filter(
+    from sqlalchemy import func
+
+    # Totals (safe if no rows)
+    planned_total = db.session.query(func.sum(PlannedAmount.amount)).scalar() or 0.0
+    actual_total = db.session.query(func.sum(Transaction.amount)).filter(
         Transaction.amount < 0
     ).scalar() or 0.0
 
-    # Per-category data
-    # This is a simplified query - adjust joins/group_by as needed
-    from sqlalchemy import func
+    # Per-category breakdown
     results = db.session.query(
         BudgetCategory.name.label('category_name'),
         BudgetCategory.id.label('category_id'),
         func.sum(PlannedAmount.amount).label('planned'),
-        func.sum(func.case([(Transaction.amount < 0, Transaction.amount)], else_=0)).label('actual')
+        func.sum(func.case([(Transaction.amount < 0, Transaction.amount)], else=0)).label('actual')
     ).outerjoin(PlannedAmount, PlannedAmount.category_id == BudgetCategory.id
     ).outerjoin(Transaction, Transaction.category_id == BudgetCategory.id
     ).filter(BudgetCategory.category_type == 'expense'
