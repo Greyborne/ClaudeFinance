@@ -462,20 +462,25 @@ def apply_recurring_template(template_id):
 
 @main.route('/api/analytics/budget-vs-actual', methods=['GET'])
 def budget_vs_actual():
-    from sqlalchemy import func
+    from sqlalchemy import func, Integer  # ← add Integer here
 
-    # Totals (safe if no rows)
     planned_total = db.session.query(func.sum(PlannedAmount.amount)).scalar() or 0.0
-    actual_total = db.session.query(func.sum(Transaction.amount)).filter(
-        Transaction.amount < 0
-    ).scalar() or 0.0
 
-    # Per-category breakdown
+    actual_total = db.session.query(
+        func.sum(func.coalesce(Transaction.amount, 0))
+    ).filter(Transaction.amount < 0).scalar() or 0.0
+
+    # Per-category
     results = db.session.query(
         BudgetCategory.name.label('category_name'),
         BudgetCategory.id.label('category_id'),
         func.sum(PlannedAmount.amount).label('planned'),
-        func.sum(func.case([(Transaction.amount < 0, Transaction.amount)], else=0)).label('actual')
+        func.sum(
+            func.coalesce(
+                Transaction.amount * (Transaction.amount < 0).cast(Integer), 
+                0
+            )
+        ).label('actual')
     ).outerjoin(PlannedAmount, PlannedAmount.category_id == BudgetCategory.id
     ).outerjoin(Transaction, Transaction.category_id == BudgetCategory.id
     ).filter(BudgetCategory.category_type == 'expense'

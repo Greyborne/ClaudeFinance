@@ -63,7 +63,7 @@ function switchTab(tabName) {
   if (tabName === 'dashboard') {
     loadDashboard();  // From dashboard.js
   } else if (tabName === 'budget') {
-    renderBudgetTable();  // From budgetTable.js
+    initializeBudgetTable();  // From budgetTable.js
   } else if (tabName === 'transactions') {
     renderTransactions();  // From transactions.js
   } else if (tabName === 'settings') {
