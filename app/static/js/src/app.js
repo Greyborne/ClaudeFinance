@@ -61,11 +61,11 @@ function switchTab(tabName) {
   
   // Refresh based on tab (use imported renders)
   if (tabName === 'dashboard') {
-    loadDashboard();  // From dashboard.js
+    initializeDashboard();  // From dashboard.js
   } else if (tabName === 'budget') {
     initializeBudgetTable();  // From budgetTable.js
   } else if (tabName === 'transactions') {
-    renderTransactions();  // From transactions.js
+    initializeTransactions();  // From transactions.js
   } else if (tabName === 'settings') {
     renderSettings();  // From settings.js
   }

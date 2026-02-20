@@ -14,6 +14,7 @@
             <nav>
                 <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
                 <button class="tab-btn" data-tab="budget">Budget Planning</button>
+                <button class="tab-btn" data-tab="categories">Categories</button>
                 <button class="tab-btn" data-tab="transactions">Transactions</button>
                 <button class="tab-btn" data-tab="settings">Settings</button>
             </nav>
@@ -74,6 +75,26 @@
                         <!-- Budget rows will be added dynamically -->
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- CATEGORIES TAB -->
+        <div id="categories-tab" class="tab-content">
+            <div class="card">
+                <h2>Manage Categories</h2>
+                <button id="addCategoryBtn" class="btn btn-primary">Add New Category</button>
+                
+                <!-- Category list / tree view -->
+                <div class="category-tree">
+                <div id="expenseCategoriesList" class="category-list">
+                    <h3>Expenses</h3>
+                    <!-- Rendered dynamically -->
+                </div>
+                <div id="incomeCategoriesList" class="category-list">
+                    <h3>Income</h3>
+                    <!-- Rendered dynamically -->
+                </div>
+                </div>
             </div>
         </div>
 

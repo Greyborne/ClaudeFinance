@@ -3,13 +3,7 @@
 import { state } from './state.js';
 import { fetchData } from './api.js';  // For delete/edit
 
-function renderCategoryLists() {
-  // Your existing code...
-}
 
-function renderCategoryWithChildren(category, container, type, level = 0) {
-  // Your existing code...
-}
 
 // NEW: Added from original
 function renderCategoryRules() {
