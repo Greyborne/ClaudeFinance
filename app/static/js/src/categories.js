@@ -2,6 +2,7 @@
 
 import { state } from './state.js';
 import { fetchData } from './api.js';
+import { editCategory } from './modals.js';  // Import editCategory to reuse in event delegation
 import { setupModals } from './modals.js';  // if needed for edit/add
 
 export function renderCategories() {

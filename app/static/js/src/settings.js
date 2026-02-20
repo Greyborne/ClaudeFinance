@@ -98,7 +98,7 @@ async function applyTemplate(id) {
 }
 
 export function renderSettings() {
-  renderCategoryLists();
+  // renderCategoryLists(); - moved to categories.js
   renderCategoryRules();
   renderRecurringTemplates();
 }

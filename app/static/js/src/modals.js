@@ -37,7 +37,7 @@ async function saveCategory(event) {
 }
 
 // Show add category modal (clear form for new entry)
-export function addCategory() {
+function addCategory() {
   // Reset form for new category
   document.getElementById('categoryModalTitle').textContent = 'Add Category';
   document.getElementById('categoryId').value = '';
@@ -63,6 +63,55 @@ export function addCategory() {
   document.getElementById('addCategoryModal').classList.add('show');
 }
 
+// NEW: Edit category function
+async function editCategory(id) {
+    const category = state.categories.find(c => c.id === id);
+    if (!category) return;
+    
+    // Populate parent dropdown (excluding self and descendants)
+    const parentSelect = document.getElementById('categoryParent');
+    parentSelect.innerHTML = '<option value="">-- Top Level Category --</option>';
+    
+    const validParents = state.categories.filter(c => 
+        c.category_type === category.category_type && 
+        c.id !== id && 
+        !isDescendantOf(c, id) // Prevent circular references
+    );
+    
+    validParents.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.parent_id ? `  └─ ${cat.name}` : cat.name;
+        if (cat.id === category.parent_id) {
+            option.selected = true;
+        }
+        parentSelect.appendChild(option);
+    });
+    
+    // Set up modal with existing values
+    document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+    document.getElementById('categoryType').value = category.category_type;
+    document.getElementById('categoryId').value = category.id;
+    document.getElementById('categoryName').value = category.name;
+    document.getElementById('categorySortOrder').value = category.sort_order || 0;
+    document.getElementById('categoryIsParentOnly').checked = category.is_parent_only || false;  // NEW
+    document.getElementById('addCategoryModal').classList.add('show');
+}
+
+// NEW: Check if a category is a descendant of another
+function isDescendantOf(category, ancestorId) {
+    let current = category;
+    while (current.parent_id) {
+        if (current.parent_id === ancestorId) {
+            return true;
+        }
+        current = state.categories.find(c => c.id === current.parent_id);
+        if (!current) break;
+    }
+    return false;
+}
+
+
 // NEW: From original
 async function uploadFile() {
   const fileInput = document.getElementById('fileInput');
@@ -80,3 +129,6 @@ async function uploadFile() {
 export function setupModals() {
   initializeModals();
 }
+export { editCategory };  // Export editCategory for use in categories.js
+export { addCategory };  // Export addCategory for use in app.js
+// export { saveCategory };  // Export saveCategory if needed elsewhere
