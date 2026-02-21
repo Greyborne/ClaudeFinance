@@ -5,8 +5,7 @@ import { renderSettings } from './settings.js';
 import { initializeTransactions } from './transactions.js';
 import { initializeBudgetTable } from './budgetTable.js';
 import { renderCategories } from './categories.js';  // adjust path if needed
-import { setupModals } from './modals.js';
-import { addCategory } from './modals.js';  // add this line near other imports
+import { setupModals, showUploadModal, saveCategory, addCategory, uploadTransactions, addCategoryType, addCategoryRule, addRecurringTemplate } from './modals.js';
 import { initializeDashboard } from './dashboard.js';  // NEW: Import from new file
 
 async function initializeApp() {
@@ -81,8 +80,8 @@ function setupEventListeners() {
   document.getElementById('addCategoryBtn')?.addEventListener('click', addCategory);  // Example
   // ... add more from original
     // Add category buttons
-  document.getElementById('addExpenseCategoryBtn').addEventListener('click', () => addCategory('expense'));
-  document.getElementById('addIncomeCategoryBtn').addEventListener('click', () => addCategory('income'));
+  document.getElementById('addExpenseCategoryBtn').addEventListener('click', () => addCategoryType('expense'));
+  document.getElementById('addIncomeCategoryBtn').addEventListener('click', () => addCategoryType('income'));
   
   // NEW: Category form submission
   document.getElementById('categoryForm').addEventListener('submit', saveCategory);
@@ -95,10 +94,10 @@ function setupEventListeners() {
   document.getElementById('uploadFileBtn').addEventListener('click', uploadTransactions);
     
   // Generate pay periods
-  document.getElementById('generatePeriodsBtn').addEventListener('click', generatePayPeriods);
+  //document.getElementById('generatePeriodsBtn').addEventListener('click', generatePayPeriods);
     
   // Transaction filter
-  document.getElementById('transactionFilter').addEventListener('change', renderTransactions);
+  document.getElementById('transactionFilter').addEventListener('change', initializeTransactions);
     
   // Add rule button
   document.getElementById('addRuleBtn').addEventListener('click', addCategoryRule);

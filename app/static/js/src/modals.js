@@ -4,7 +4,7 @@ import { state } from './state.js';
 import { fetchData } from './api.js';
 import { renderSettings } from './settings.js';  // To refresh after changes
 
-function initializeModals() {
+function initializeModals() { 
   // Your existing close listeners...
 
   // NEW: Category form submit
@@ -35,6 +35,40 @@ async function saveCategory(event) {
   await initializeState();
   renderSettings();
 }
+
+
+export async function addCategoryType(type) {
+    // Populate parent dropdown with same type categories
+    const parentSelect = document.getElementById('categoryParent');
+    parentSelect.innerHTML = '<option value="">-- Top Level Category --</option>';
+    
+    const sameTypeCategories = state.categories.filter(c => c.category_type === type);
+    sameTypeCategories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.parent_id ? `  └─ ${cat.name}` : cat.name;
+        parentSelect.appendChild(option);
+    });
+    
+    // Set up modal
+    document.getElementById('categoryModalTitle').textContent = `Add ${type.charAt(0).toUpperCase() + type.slice(1)} Category`;
+    document.getElementById('categoryType').value = type;
+    document.getElementById('categoryId').value = '';
+    document.getElementById('categoryName').value = '';
+    document.getElementById('categorySortOrder').value = '0';
+    document.getElementById('categoryParent').value = '';
+    
+    // Reset checkbox - with safety check
+    const isParentOnlyCheckbox = document.getElementById('categoryIsParentOnly');
+    if (isParentOnlyCheckbox) {
+        isParentOnlyCheckbox.checked = false;
+    }
+    
+    // Open modal (only once!)
+    document.getElementById('addCategoryModal').classList.add('show');
+}
+
+
 
 // Show add category modal (clear form for new entry)
 function addCategory() {
@@ -98,6 +132,66 @@ async function editCategory(id) {
     document.getElementById('addCategoryModal').classList.add('show');
 }
 
+async function addCategoryRule() {
+    const pattern = prompt('Enter pattern to match (e.g., "walmart"):');
+    if (!pattern) return;
+    
+    const categoryId = prompt('Enter category ID:');
+    if (!categoryId) return;
+    
+    try {
+        const response = await fetch('/api/category-rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                pattern: pattern,
+                category_id: parseInt(categoryId)
+            })
+        });
+        
+        if (response.ok) {
+            const rule = await response.json();
+            state.categoryRules.push(rule);
+            renderCategoryRules();
+        }
+    } catch (error) {
+        console.error('Error adding rule:', error);
+    }
+}
+
+async function addRecurringTemplate() {
+    const name = prompt('Template name:');
+    if (!name) return;
+    
+    const categoryId = prompt('Category ID:');
+    const amount = prompt('Amount:');
+    const frequency = prompt('Frequency (every_period/monthly/bi_monthly):');
+    
+    if (!categoryId || !amount || !frequency) return;
+    
+    try {
+        const response = await fetch('/api/recurring-templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name,
+                category_id: parseInt(categoryId),
+                amount: parseFloat(amount),
+                frequency: frequency
+            })
+        });
+        
+        if (response.ok) {
+            const template = await response.json();
+            state.recurringTemplates.push(template);
+            renderRecurringTemplates();
+        }
+    } catch (error) {
+        console.error('Error adding template:', error);
+    }
+}
+
+
 // NEW: Check if a category is a descendant of another
 function isDescendantOf(category, ancestorId) {
     let current = category;
@@ -111,6 +205,43 @@ function isDescendantOf(category, ancestorId) {
     return false;
 }
 
+export function showUploadModal() {
+    document.getElementById('uploadModal').classList.add('show');
+}
+
+export async function uploadTransactions() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Please select a file');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+        const response = await fetch('/api/transactions/import', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            alert(result.message);
+            document.getElementById('uploadModal').classList.remove('show');
+            await loadAllData();
+            renderTransactions();
+        } else {
+            const error = await response.json();
+            alert('Error: ' + error.error);
+        }
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('Error uploading file');
+    }
+}
 
 // NEW: From original
 async function uploadFile() {
@@ -131,4 +262,6 @@ export function setupModals() {
 }
 export { editCategory };  // Export editCategory for use in categories.js
 export { addCategory };  // Export addCategory for use in app.js
-// export { saveCategory };  // Export saveCategory if needed elsewhere
+export { saveCategory };  // Export saveCategory if needed elsewhere
+export { addCategoryRule };  // Export addCategoryRule for use in app.js
+export { addRecurringTemplate };  // Export addRecurringTemplate for use in app.js

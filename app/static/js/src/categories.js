@@ -73,7 +73,20 @@ document.addEventListener('click', (e) => {
 
 // Optional: Refresh after changes
 async function deleteCategory(id) {
-  await fetchData(`/categories/${id}`, 'DELETE');
-  await initializeState();  // reload data
-  renderCategories();
+if (!confirm('Are you sure you want to delete this category?')) return;
+    try {
+        const response = await fetch(`/api/categories/${id}`, {
+            method: 'DELETE'
+        });
+            
+        if (response.ok) {
+            state.categories = state.categories.filter(c => c.id !== id);
+            await initializeState();  // reload data
+            renderCategories();
+        }
+    } catch (error) {
+            console.error('Error deleting category:', error);
+        }
 }
+
+
