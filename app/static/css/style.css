@@ -17,6 +17,7 @@ body {
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
+    overflow-y: auto;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -70,15 +71,24 @@ nav {
     box-shadow: 0 0 10px rgba(74, 158, 255, 0.3);
 }
 
-.tab-content {
+/* .tab-content {
     display: none;
     flex: 1;
     overflow: hidden;
+} */
+
+.tab-content {
+  padding: 1.5rem;
+  min-height: calc(100vh - 200px);  /* adjust 200px based on your header/nav height */
+  overflow-y: auto;                 /* enable vertical scroll */
+  box-sizing: border-box;
 }
 
 .tab-content.active {
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    height: 100vh;                    /* or calc(100vh - header height) */
 }
 
 /* Cards */
@@ -582,6 +592,7 @@ select:focus {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  min-height: 100%;                 /* fill available space */
 }
 
 .section-card {
@@ -598,6 +609,7 @@ select:focus {
   align-items: center;
   margin-bottom: 1rem;
   cursor: pointer;
+  user-select: none;  /* prevents text selection on click */
 }
 
 .section-header h3 {
@@ -605,9 +617,14 @@ select:focus {
   color: #e2e8f0;
 }
 
+.section-card.collapsed .section-content {
+  display: none !important;  /* This is what hides the content */
+}
+
 .toggle-icon {
   font-size: 1.2rem;
   transition: transform 0.2s;
+  display: inline-block;
 }
 
 .collapsed .toggle-icon {
