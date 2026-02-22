@@ -1,6 +1,6 @@
 // src/modals.js
 
-import { state } from './state.js';
+import { state, initializeState } from './state.js';
 import { fetchData } from './api.js';
 import { renderSettings } from './settings.js';  // To refresh after changes
 
@@ -258,7 +258,39 @@ async function uploadFile() {
 }
 
 export function setupModals() {
-  initializeModals();
+  //initializeModals();  // Removed by advise from Grok due to added code below.
+
+  // Close with X button (works for ALL modals with .close)
+  document.querySelectorAll('.modal .close').forEach(closeBtn => {
+    closeBtn.addEventListener('click', () => {
+      closeBtn.closest('.modal').classList.remove('show');
+    });
+  });
+
+  // Cancel button in category modal (specific selector)
+  const cancelBtn = document.querySelector('#cancelCategoryBtn');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      document.getElementById('addCategoryModal').classList.remove('show');
+    });
+  }
+
+  // Click outside (overlay) — works for all modals
+  window.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+      e.target.classList.remove('show');
+    }
+  });
+
+  // Esc key — closes any open modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const openModal = document.querySelector('.modal.show');
+      if (openModal) {
+        openModal.classList.remove('show');
+      }
+    }
+  });
 }
 export { editCategory };  // Export editCategory for use in categories.js
 export { addCategory };  // Export addCategory for use in app.js

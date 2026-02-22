@@ -39,6 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+window.toggleSection = function(header) {
+  const card = header.closest('.section-card');
+  if (card) {
+    card.classList.toggle('collapsed');
+  }
+};
+
 // Tab switching (from original)
 function initializeTabs() {
   const tabBtns = document.querySelectorAll('.tab-btn');
@@ -100,10 +107,10 @@ function setupEventListeners() {
   document.getElementById('transactionFilter').addEventListener('change', initializeTransactions);
     
   // Add rule button
-  document.getElementById('addRuleBtn').addEventListener('click', addCategoryRule);
+ // document.getElementById('addRuleBtn').addEventListener('click', addCategoryRule);
   
   // Add template button
-  document.getElementById('addTemplateBtn').addEventListener('click', addRecurringTemplate);
+  // document.getElementById('addTemplateBtn').addEventListener('click', addRecurringTemplate);
 
   // Close modal when clicking X
   const closeButtons = document.querySelectorAll('.modal .close');
@@ -124,4 +131,27 @@ function setupEventListeners() {
   document.getElementById('cancelCategoryBtn')?.addEventListener('click', () => {
     document.getElementById('addCategoryModal').classList.remove('show');
   }); 
+
+  // Category move action logic (event delegation)
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.move-up, .move-down');
+    if (!btn) return;
+
+    const id = parseInt(btn.dataset.id);
+    const direction = btn.classList.contains('move-up') ? 'up' : 'down';
+
+    try {
+      await fetchData(`/api/categories/${id}/reorder`, 'POST', { direction });
+      await initializeState();
+      renderCategoryLists(); // refresh view
+    } catch (err) {
+      console.error('Reorder failed:', err);
+    }
+  });
+
+function toggleSection(header) {
+  const card = header.closest('.section-card');
+  card.classList.toggle('collapsed');
+}
+
 }

@@ -82,19 +82,20 @@
         <div id="categories-tab" class="tab-content">
             <div class="card">
                 <h2>Manage Categories</h2>
-                <button id="addCategoryBtn" class="btn btn-primary">Add New Category</button>
+                <p>(Category management has been moved to the Settings tab for now.)</p>
+                <!-- <button id="addCategoryBtn" class="btn btn-primary">Add New Category</button> -->
                 
                 <!-- Category list / tree view -->
-                <div class="category-tree">
+                <!-- <div class="category-tree">
                 <div id="expenseCategoriesList" class="category-list">
-                    <h3>Expenses</h3>
+                    <h3>Expenses</h3> -->
                     <!-- Rendered dynamically -->
-                </div>
+                <!-- </div>
                 <div id="incomeCategoriesList" class="category-list">
-                    <h3>Income</h3>
+                    <h3>Income</h3> -->
                     <!-- Rendered dynamically -->
-                </div>
-                </div>
+                <!-- </div>
+                </div> -->
             </div>
         </div>
 
@@ -133,35 +134,56 @@
 
         <!-- SETTINGS TAB -->
         <div id="settings-tab" class="tab-content">
-            <div class="settings-grid">
-                <div class="card">
-                    <h2>Categories</h2>
-                    <div class="category-lists">
-                        <div>
-                            <h3>Expense Categories</h3>
-                            <div id="expenseCategoriesList"></div>
-                            <button class="btn btn-sm btn-primary" id="addExpenseCategoryBtn">Add Expense Category</button>
-                        </div>
-                        <div>
-                            <h3>Income Categories</h3>
-                            <div id="incomeCategoriesList"></div>
-                            <button class="btn btn-sm btn-primary" id="addIncomeCategoryBtn">Add Income Category</button>
-                        </div>
-                    </div>
+        <div class="settings-sections">
+
+            <!-- Categories Section -->
+            <div class="section-card">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h3>Categories</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <!-- <button class="btn btn-primary mb-3" id="addCategoryBtn">Add Category</button> -->
+                <div class="category-lists row">
+                <div class="col-md-6">
+                    <h4>Expense Categories</h4>
+                    <button class="btn btn-sm btn-primary" id="addExpenseCategoryBtn">Add Expense Category</button>       
+                    <div id="expenseCategoriesList"></div>
                 </div>
-                
-                <div class="card">
-                    <h2>Auto-Categorization Rules</h2>
-                    <div id="categoryRulesList"></div>
-                    <button class="btn btn-sm btn-primary" id="addRuleBtn">Add Rule</button>
+                <div class="col-md-6">
+                    <h4>Income Categories</h4>
+                    <button class="btn btn-sm btn-primary" id="addIncomeCategoryBtn">Add Income Category</button>
+                    <div id="incomeCategoriesList"></div>
                 </div>
-                
-                <div class="card">
-                    <h2>Recurring Templates</h2>
-                    <div id="recurringTemplatesList"></div>
-                    <button class="btn btn-sm btn-primary" id="addTemplateBtn">Add Template</button>
                 </div>
             </div>
+            </div>
+
+            <!-- Auto-Categorization Rules -->
+            <div class="section-card">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h3>Auto-Categorization Rules</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <button class="btn btn-primary mb-3">Add Rule</button>
+                <div id="categoryRulesList"></div>
+            </div>
+            </div>
+
+            <!-- Recurring Templates -->
+            <div class="section-card">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h3>Recurring Templates</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <button class="btn btn-primary mb-3">Add Template</button>
+                <div id="recurringTemplatesList"></div>
+            </div>
+            </div>
+
+        </div>
         </div>
     </div>
     

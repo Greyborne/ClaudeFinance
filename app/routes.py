@@ -589,3 +589,34 @@ def update_due_date(planned_id):
     
     db.session.commit()
     return jsonify(planned.to_dict())
+
+
+@main.route('/api/categories/<int:category_id>/reorder', methods=['POST'])
+def reorder_category(category_id):
+    data = request.json
+    direction = data.get('direction')  # 'up' or 'down'
+
+    category = BudgetCategory.query.get_or_404(category_id)
+    siblings = BudgetCategory.query.filter_by(
+        parent_id=category.parent_id,
+        category_type=category.category_type
+    ).order_by(BudgetCategory.sort_order).all()
+
+    current_idx = next((i for i, c in enumerate(siblings) if c.id == category_id), None)
+    if current_idx is None:
+        return jsonify({'error': 'Category not found in list'}), 404
+
+    if direction == 'up' and current_idx > 0:
+        swap_with = siblings[current_idx - 1]
+    elif direction == 'down' and current_idx < len(siblings) - 1:
+        swap_with = siblings[current_idx + 1]
+    else:
+        return jsonify({'message': 'No change needed'}), 200
+
+    # Swap sort_order
+    temp = category.sort_order
+    category.sort_order = swap_with.sort_order
+    swap_with.sort_order = temp
+
+    db.session.commit()
+    return jsonify({'message': 'Reordered'})

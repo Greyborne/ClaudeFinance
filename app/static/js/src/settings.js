@@ -26,6 +26,55 @@ function renderCategoryRules() {
   rulesList.addEventListener('click', handleRuleAction);
 }
 
+function renderCategoryLists() {
+    const expensesList = document.getElementById('expenseCategoriesList');
+    const incomesList = document.getElementById('incomeCategoriesList');
+    
+    expensesList.innerHTML = '';
+    incomesList.innerHTML = '';
+    
+    // Get top-level categories (no parent)
+    const topLevelExpenses = state.categories.filter(c => 
+        c.category_type === 'expense' && !c.parent_id
+    );
+    const topLevelIncome = state.categories.filter(c => 
+        c.category_type === 'income' && !c.parent_id
+    );
+    
+    // Render expenses hierarchically
+    topLevelExpenses.forEach(category => {
+        renderCategoryWithChildren(category, expensesList, 'expense');
+    });
+    
+    // Render income hierarchically
+    topLevelIncome.forEach(category => {
+        renderCategoryWithChildren(category, incomesList, 'income');
+    });
+}
+
+function renderCategoryWithChildren(category, container, type, level = 0) {
+  const div = document.createElement('div');
+  div.className = 'category-item';
+  div.style.marginLeft = `${level * 20}px`;
+  div.innerHTML = `
+    <div class="sort-controls">
+      <button class="btn btn-sm btn-outline-secondary move-up" data-id="${category.id}">↑</button>
+      <button class="btn btn-sm btn-outline-secondary move-down" data-id="${category.id}">↓</button>
+    </div>
+    <span>${level > 0 ? '└─ ' : ''}${category.name}</span>
+    <span class="sort-order">(${category.sort_order || 0})</span>
+    <div class="category-actions">
+      <button class="btn btn-sm btn-secondary edit-btn" data-id="${category.id}">Edit</button>
+      <button class="btn btn-sm btn-danger delete-btn" data-id="${category.id}">Delete</button>
+    </div>
+  `;
+  container.appendChild(div);
+
+  // Children...
+  const children = state.categories.filter(c => c.parent_id === category.id);
+  children.forEach(child => renderCategoryWithChildren(child, container, type, level + 1));
+}
+
 function handleRuleAction(e) {
   const btn = e.target.closest('button');
   if (!btn) return;
@@ -98,7 +147,7 @@ async function applyTemplate(id) {
 }
 
 export function renderSettings() {
-  // renderCategoryLists(); - moved to categories.js
+  renderCategoryLists(); //- moved to categories.js
   renderCategoryRules();
   renderRecurringTemplates();
 }
