@@ -21,6 +21,7 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 header {
@@ -78,17 +79,20 @@ nav {
 } */
 
 .tab-content {
+  display: none;
   padding: 1.5rem;
   min-height: calc(100vh - 200px);  /* adjust 200px based on your header/nav height */
+  flex: 1;                        /* allow it to grow and fill space */
   overflow-y: auto;                 /* enable vertical scroll */
   box-sizing: border-box;
 }
 
 .tab-content.active {
-    display: flex;
+/*     display: flex;
     flex-direction: column;
     overflow-y: auto;
     height: 100vh;                    /* or calc(100vh - header height) */
+    display: block;
 }
 
 /* Cards */
@@ -586,6 +590,10 @@ select:focus {
     border-radius: 4px;
 }
 
+#settings-tab.active {
+  height: calc(100vh - 180px);      /* adjust for your header/nav */
+  overflow-y: auto;
+}
 
 /* Full-width sections in Settings tab */
 .settings-sections {
@@ -593,6 +601,7 @@ select:focus {
   flex-direction: column;
   gap: 2rem;
   min-height: 100%;                 /* fill available space */
+  padding-bottom: 2rem;             /* breathing room at bottom */
 }
 
 .section-card {
@@ -615,6 +624,14 @@ select:focus {
 .section-header h3 {
   margin: 0;
   color: #e2e8f0;
+}
+
+.section-card .section-content {
+  display: none;  /* hidden by default */
+}
+
+.section-card:not(.collapsed) .section-content {
+  display: block;  /* shown when NOT collapsed */
 }
 
 .section-card.collapsed .section-content {

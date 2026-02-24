@@ -5,7 +5,7 @@ import { renderSettings } from './settings.js';
 import { initializeTransactions } from './transactions.js';
 import { initializeBudgetTable } from './budgetTable.js';
 import { renderCategories } from './categories.js';  // adjust path if needed
-import { setupModals, showUploadModal, saveCategory, addCategory, uploadTransactions, addCategoryType, addCategoryRule, addRecurringTemplate } from './modals.js';
+import { setupModals, showUploadModal, saveCategory, addCategory, addGroup, uploadTransactions, addCategoryType, addCategoryRule, addRecurringTemplate } from './modals.js';
 import { initializeDashboard } from './dashboard.js';  // NEW: Import from new file
 
 async function initializeApp() {
@@ -86,10 +86,13 @@ function setupEventListeners() {
   // Toolbar buttons, etc. — add specifics here or delegate to module inits
   document.getElementById('addCategoryBtn')?.addEventListener('click', addCategory);  // Example
   // ... add more from original
-    // Add category buttons
+  // Add category buttons
   document.getElementById('addExpenseCategoryBtn').addEventListener('click', () => addCategoryType('expense'));
   document.getElementById('addIncomeCategoryBtn').addEventListener('click', () => addCategoryType('income'));
-  
+  // Add category buttons
+  document.getElementById('addExpenseGroupBtn').addEventListener('click', () => addGroup('expense'));
+  document.getElementById('addIncomeGroupBtn').addEventListener('click', () => addGroup('income'));
+
   // NEW: Category form submission
   document.getElementById('categoryForm').addEventListener('submit', saveCategory);
   document.getElementById('cancelCategoryBtn').addEventListener('click', () => {

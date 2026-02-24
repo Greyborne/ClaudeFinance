@@ -63,7 +63,12 @@ document.addEventListener('click', (e) => {
   
   const id = parseInt(btn.dataset.id);
   if (btn.classList.contains('edit-btn')) {
-    editCategory(id);  // Reuse or import your existing edit function
+    const category = state.categories.find(c => c.id === id);
+    if (category.is_parent_only) {
+      editGroup(id);  // Use group modal for parents
+    } else {
+      editCategory(id);  // Use regular modal for children
+    }
   } else if (btn.classList.contains('delete-btn')) {
     if (confirm('Delete this category and all sub-categories?')) {
       deleteCategory(id);

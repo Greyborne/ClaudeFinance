@@ -12,6 +12,85 @@ function initializeModals() {
 
   // NEW: File upload
   document.getElementById('uploadFileBtn')?.addEventListener('click', uploadFile);
+
+  // Initialize group modal
+  const groupModal = document.getElementById('addGroupModal');
+  const groupCloseBtn = groupModal.querySelector('.close');
+
+  groupCloseBtn.addEventListener('click', () => {
+    groupModal.classList.remove('show');
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === groupModal) {
+      groupModal.classList.remove('show');
+    }
+  });
+
+  // Cancel button
+  document.getElementById('cancelGroupBtn').addEventListener('click', () => {
+    groupModal.classList.remove('show');
+  });
+
+  // Form submit
+  document.getElementById('groupForm').addEventListener('submit', saveGroup);
+}
+
+// New save function for groups
+async function saveGroup(e) {
+  e.preventDefault();
+  const id = document.getElementById('groupId').value;
+  const data = {
+    name: document.getElementById('groupName').value.trim(),
+    category_type: document.getElementById('groupType').value,
+    parent_id: null,  // Groups are always top-level
+    is_parent_only: true,  // Always true for groups
+    sort_order: parseInt(document.getElementById('groupSortOrder').value) || 0
+  };
+
+  if (!data.name) {
+    alert('Group name required');
+    return;
+  }
+
+  const url = id ? `/api/categories/${id}` : '/api/categories';
+  const method = id ? 'PUT' : 'POST';
+
+  try {
+    await fetchData(url, method, data);
+    document.getElementById('addGroupModal').classList.remove('show');
+    await initializeState();  // Reload data
+    renderSettings();  // Refresh the list
+  } catch (err) {
+    console.error('Save group failed:', err);
+    alert('Error saving group');
+  }
+}
+
+// New addGroup function
+export function addGroup(type) {
+  const modalTitle = type === 'expense' ? 'Add Expense Group' : 'Add Income Group';
+  document.getElementById('groupModalTitle').textContent = 'Add Group';
+  document.getElementById('groupId').value = '';
+  document.getElementById('groupName').value = '';
+  document.getElementById('groupType').value = type;
+  document.getElementById('groupSortOrder').value = '0';
+
+  document.getElementById('addGroupModal').classList.add('show');
+}
+
+// New editGroup function (similar, but for existing)
+export function editGroup(groupId) {
+  const group = state.categories.find(c => c.id === groupId);
+  if (!group) return;
+
+  document.getElementById('groupModalTitle').textContent = 'Edit Group';
+  document.getElementById('groupId').value = group.id;
+  document.getElementById('groupName').value = group.name;
+  document.getElementById('groupType').value = group.category_type;
+  document.getElementById('groupSortOrder').value = group.sort_order || 0;
+
+  document.getElementById('addGroupModal').classList.add('show');
 }
 
 // NEW: From original
@@ -23,7 +102,7 @@ async function saveCategory(event) {
     name: document.getElementById('categoryName').value,
     category_type: document.getElementById('categoryType').value,
     parent_id: document.getElementById('categoryParent').value || null,
-    is_parent_only: document.getElementById('categoryIsParentOnly').checked,
+    //is_parent_only: document.getElementById('categoryIsParentOnly').checked,
     sort_order: parseInt(document.getElementById('categorySortOrder').value)
   };
 
@@ -128,7 +207,7 @@ async function editCategory(id) {
     document.getElementById('categoryId').value = category.id;
     document.getElementById('categoryName').value = category.name;
     document.getElementById('categorySortOrder').value = category.sort_order || 0;
-    document.getElementById('categoryIsParentOnly').checked = category.is_parent_only || false;  // NEW
+    //document.getElementById('categoryIsParentOnly').checked = category.is_parent_only || false;  // NEW
     document.getElementById('addCategoryModal').classList.add('show');
 }
 

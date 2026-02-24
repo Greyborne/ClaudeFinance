@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget App</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Modern favicon setup -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" sizes="32x32">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -137,7 +139,7 @@
         <div class="settings-sections">
 
             <!-- Categories Section -->
-            <div class="section-card">
+            <div class="section-card collapsed">
             <div class="section-header" onclick="toggleSection(this)">
                 <h3>Categories</h3>
                 <span class="toggle-icon">▼</span>
@@ -147,12 +149,14 @@
                 <div class="category-lists row">
                 <div class="col-md-6">
                     <h4>Expense Categories</h4>
-                    <button class="btn btn-sm btn-primary" id="addExpenseCategoryBtn">Add Expense Category</button>       
+                    <button class="btn btn-sm btn-primary" id="addExpenseCategoryBtn">Add Expense Category</button>
+                    <button class="btn btn-sm btn-primary" id="addExpenseGroupBtn">Add Expense Group</button>       
                     <div id="expenseCategoriesList"></div>
                 </div>
                 <div class="col-md-6">
                     <h4>Income Categories</h4>
                     <button class="btn btn-sm btn-primary" id="addIncomeCategoryBtn">Add Income Category</button>
+                    <button class="btn btn-sm btn-primary" id="addIncomeGroupBtn">Add Income Group</button>
                     <div id="incomeCategoriesList"></div>
                 </div>
                 </div>
@@ -160,7 +164,7 @@
             </div>
 
             <!-- Auto-Categorization Rules -->
-            <div class="section-card">
+            <div class="section-card collapsed">
             <div class="section-header" onclick="toggleSection(this)">
                 <h3>Auto-Categorization Rules</h3>
                 <span class="toggle-icon">▼</span>
@@ -172,7 +176,7 @@
             </div>
 
             <!-- Recurring Templates -->
-            <div class="section-card">
+            <div class="section-card collapsed">
             <div class="section-header" onclick="toggleSection(this)">
                 <h3>Recurring Templates</h3>
                 <span class="toggle-icon">▼</span>
@@ -207,13 +211,6 @@
                         <option value="">-- Top Level Category --</option>
                     </select>
                 </div>
-                <!-- NEW: Parent-only checkbox -->
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="categoryIsParentOnly">
-                        Parent Category Only (cannot assign transactions)
-                    </label>
-                </div>
                 
                 <div class="form-group">
                     <label for="categorySortOrder">Sort Order:</label>
@@ -224,6 +221,39 @@
                 <button type="button" class="btn btn-secondary" id="cancelCategoryBtn">Cancel</button>
             </form>
         </div>
+    </div>
+
+    <!-- New Group Modal -->
+    <div id="addGroupModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="groupModalTitle">Add Group</h2>
+        
+        <form id="groupForm">
+        <div class="form-group">
+            <label for="groupName">Group Name:</label>
+            <input type="text" id="groupName" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="groupType">Type:</label>
+            <select id="groupType" required>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="groupSortOrder">Sort Order:</label>
+            <input type="number" id="groupSortOrder" value="0">
+        </div>
+        
+        <input type="hidden" id="groupId" value="">
+        
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" id="cancelGroupBtn">Cancel</button>
+        </form>
+    </div>
     </div>
 
     <!-- File Upload Modal -->
