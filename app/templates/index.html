@@ -145,8 +145,26 @@
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="section-content">
+                <!-- New toolbar – placed at the very top inside the content -->
+                <div class="category-toolbar mb-4">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-sm btn-primary" id="addExpenseCategoryBtn">
+                            <i class="bi bi-plus-circle me-1"></i>Add Expense Category
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" id="addExpenseGroupBtn">
+                            <i class="bi bi-plus-square me-1"></i>Add Expense Group
+                        </button>
+                        <button class="btn btn-sm btn-primary" id="addIncomeCategoryBtn">
+                            <i class="bi bi-plus-circle me-1"></i>Add Income Category
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" id="addIncomeGroupBtn">
+                            <i class="bi bi-plus-square me-1"></i>Add Income Group
+                        </button>
+                    </div>
+                </div>
+
                 <!-- <button class="btn btn-primary mb-3" id="addCategoryBtn">Add Category</button> -->
-                <div class="category-lists row">
+<!--                 <div class="category-lists row">
                 <div class="col-md-6">
                     <h4>Expense Categories</h4>
                     <button class="btn btn-sm btn-primary" id="addExpenseCategoryBtn">Add Expense Category</button>
@@ -159,6 +177,18 @@
                     <button class="btn btn-sm btn-primary" id="addIncomeGroupBtn">Add Income Group</button>
                     <div id="incomeCategoriesList"></div>
                 </div>
+                </div> -->
+
+                <!-- Keep your existing row + columns structure -->
+                <div class="category-lists row g-4">
+                    <div class="col-md-6">
+                        <h4 class="mb-3 text-danger fw-bold">Expense Categories</h4>  <!-- optional color emphasis -->
+                        <div id="expenseCategoriesList" class="d-flex flex-column gap-2"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="mb-3 text-success fw-bold">Income Categories</h4>
+                        <div id="incomeCategoriesList" class="d-flex flex-column gap-2"></div>
+                    </div>
                 </div>
             </div>
             </div>

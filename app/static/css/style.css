@@ -389,6 +389,17 @@ tr:hover {
     color: #4a9eff;
 }
 
+CSS.category-toolbar {
+  background-color: rgba(255, 255, 255, 0.06);   /* subtle contrast in dark mode */
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.category-toolbar .btn {
+  min-width: 160px;   /* prevents buttons from shrinking too much */
+}
+
 .category-item,
 .rule-item,
 .template-item {
@@ -400,6 +411,34 @@ tr:hover {
     border-radius: 5px;
     margin-bottom: 5px;
     border: 1px solid #2a3142;
+}
+
+/* Make sure sub-categories indent nicely but still full-width */
+.category-item .nested {
+  padding-left: 2rem;
+  margin-top: 0.5rem;
+}
+
+/* Optional: better spacing for collapsed → expanded transition */
+.section-content {
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  overflow: hidden;
+}
+
+#expenseCategoriesList .category-item,
+#incomeCategoriesList .category-item {
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  background-color: rgba(30, 30, 46, 0.6);   /* example dark-mode surface */
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.12s ease;
+}
+
+#expenseCategoriesList .category-item:hover,
+#incomeCategoriesList .category-item:hover {
+  background-color: rgba(50, 50, 70, 0.8);
+  transform: translateY(-1px);
 }
 
 /* Modal */

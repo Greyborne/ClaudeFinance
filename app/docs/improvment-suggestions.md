@@ -96,6 +96,19 @@ Last updated: February 2025 (feel free to update date when we edit)
 - Loading indicators
 - Collapsible parent categories
 
-Feel free to reorder, check off, or add notes as we implement things.
 
-Happy to expand any section or help implement any of these items next — just say the word!
+* The new modular frontend is in $${\color{orange}\textsf{app/static/js/src/}}$$
+* The entry point is $${\color{orange}\textsf{app/static/js/src/app.js}}$$ (loaded via <script type="module"> in index.html)
+* The old single-file version remains in $${\color{orange}\textsf{app/static/js/app.js}}$$ (for reference / rollback)
+* All API calls are prefixed with $${\color{orange}\textsf{/api}}$$ (handled in $${\color{orange}\textsf{routes.py}}$$)
+* Database schema changes → make model changes → run flask db migrate → commit the new migration file
+
+# Planned / in-progress features
+
+* Finish modular JS migration (dashboard charts, utils)
+* Recurring expense templates with auto-population across pay periods
+* Budget rollover / carryover logic
+* Mobile/responsive layout improvements
+* CSV import preview + manual category mapping
+* Export budget reports (CSV / PDF)
+* Dark mode toggle
