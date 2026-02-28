@@ -209,9 +209,32 @@ nav {
 }
 
 .btn-sm {
-    padding: 5px 10px;
+    padding: 10px 10px;
     font-size: 12px;
 }
+
+/* Category Buttons */
+.category-btn {
+    background: #1e3c6b;
+    color: white;
+    border: 1px solid #3366b7;
+}
+.category-btn:hover {
+    background: #253549;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(74, 158, 255, 0.4);
+}
+.category-btn-secondary {
+    background: #38506f;
+    color: white;
+    border: 1px solid #3366b7;
+}
+.category-btn-secondary:hover {
+    background: #253549;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(74, 158, 255, 0.4);
+}
+/* Category List */
 
 /* Tables */
 .budget-table-container,
@@ -389,6 +412,35 @@ tr:hover {
     color: #4a9eff;
 }
 
+.category-header {
+    padding: 0.75rem 1rem;
+    background-color: #394353;          /* ← this is likely your old color – adjust hex if needed */
+    border-radius: 6px;         
+    border: 1px solid #515a68;
+    margin-bottom: 0.5rem;         /* tighter vertical spacing between rows */
+    color: #e2e8f0;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-section {
+  background: #2d3748;              
+  border-radius: 6px;
+  overflow: hidden;                 
+}
+
+.category-header h4 {
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.header-actions .btn {
+  font-size: 0.875rem;
+  padding: 0.4rem 0.9rem;
+}
+
 .category-toolbar {
   background-color: rgba(255, 255, 255, 0.06);   /* subtle contrast in dark mode */
   padding: 1rem;
@@ -400,7 +452,7 @@ tr:hover {
   min-width: 140px;   /* prevents buttons from shrinking too much */
 }
 
-.category-item,
+/* .category-item,
 .rule-item,
 .template-item {
     display: flex;
@@ -411,55 +463,89 @@ tr:hover {
     border-radius: 5px;
     margin-bottom: 5px;
     border: 1px solid #2a3142;
+} */
+
+
+
+/* 1. Base styling for ALL .category-item (including subcategories) */
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;                    /* consistent spacing between arrows/name/count/actions */
+    row-gap: .18rem;                   /* slightly tighter vertical spacing for subcategories */
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0.15rem 1.25rem;      /* more breathing room than 8px */
+    background: #1e293b;           /* your darker card bg */
+    border-radius: 6px;
+    border: 1px solid #334155;
+    margin-bottom: 0.05rem;         /* tighter vertical spacing between rows */
+    transition: background 0.15s;
 }
 
-/* Sort arrows container */
+.category-item:hover {
+    background: #253549;           /* your hover state – nice and subtle */
+}
+
+/* 2. Keep these child selectors – they are good */
 .category-item .sort-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+    display: flex;
+    flex-direction: row;
+    gap: 0.0;
 }
 
-/* Name takes most space */
 .category-item .name {
-  flex: 1;
-  font-weight: 500;
+    flex: 1;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;      /* added – prevents very long names from breaking layout */
 }
 
-/* Count badge-like */
 .category-item .count {
-  min-width: 50px;
-  text-align: center;
-  color: #94a3b8;
-  font-size: 0.9rem;
+    min-width: 50px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.9rem;
 }
 
-/* Actions */
 .category-item .actions {
-  display: flex;
-  gap: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
 }
 
-/* Make sure sub-categories indent nicely but still full-width */
+.category-actions {
+    display: flex;
+    gap: 5px;
+}
+
+/* 3. Indent subcategories nicely */
 .category-item .nested {
-  padding-left: 2rem;
-  margin-top: 0.5rem;
+    padding-left: 2.5rem;         /* slightly more indent for hierarchy */
+    margin-top: 0.5rem;
 }
 
-/* Optional: better spacing for collapsed → expanded transition */
+/* 4. Keep the section collapse animation */
 .section-content {
-  transition: max-height 0.35s ease, opacity 0.25s ease;
-  overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.25s ease;
+    overflow: hidden;
+}
+
+#expenseCategoriesList,
+#incomeCategoriesList {
+    background: #2d3748;                /* match section bg – no page color leaks */
 }
 
 /* Category items – force full width inside their container */
-#expenseCategoriesList .category-item,
+/* #expenseCategoriesList .category-item,
 #incomeCategoriesList .category-item {
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
   padding: 0.8rem 1.25rem;
-  background: #1e293b;           /* example dark card bg – match your theme */
+  background: #1e293b;         
   border-radius: 6px;
   border: 1px solid #334155;
   display: flex;
@@ -471,7 +557,7 @@ tr:hover {
 #expenseCategoriesList .category-item:hover,
 #incomeCategoriesList .category-item:hover {
   background: #253549;
-}
+} */
 
 /* Modal */
 .modal {
@@ -638,11 +724,6 @@ select:focus {
     text-align: center !important;  /* Center the date */
 }
 
-.category-actions {
-    display: flex;
-    gap: 5px;
-}
-
 .form-group {
     margin-bottom: 15px;
 }
@@ -730,7 +811,7 @@ select:focus {
   font-size: 0.9rem;
   padding: 0;
   line-height: 1;
-  margin-right: 0.5rem;
+  margin-right: 0.05rem;
 }
 
 .move-up:hover, .move-down:hover {
@@ -741,7 +822,11 @@ select:focus {
 .edit-btn {
   background: #4a5568 !important; /* same as card bg */
   color: white !important;
+  height: 28px;
+  width: 60px;
   border: 1px solid #718096;
+  padding: 0;
+  line-height: 1;  
 }
 
 .edit-btn:hover {
@@ -752,4 +837,11 @@ select:focus {
 .delete-btn {
   background: #e53e3e;
   color: white;
+  height: 28px;
+  width: 60px;
+  border: 1px solid #718096;
+  padding: 0;
+  line-height: 1;
 }
+
+

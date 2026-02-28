@@ -1,6 +1,24 @@
-from app import db
 from datetime import datetime
 from sqlalchemy import CheckConstraint
+
+# No top-level "from app import db" — avoids circular import
+
+class CategoryGroup:
+    """Groups for organizing categories (replaces old parent-only hack)"""
+    __tablename__ = 'category_groups'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    category_type = db.Column(db.String(20), nullable=False)  # 'expense' or 'income'
+    sort_order = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # One group → many categories
+    categories = db.relationship('BudgetCategory', back_populates='group', lazy=True)
+
+    def __repr__(self):
+        return f'<CategoryGroup {self.name} ({self.category_type})>'
+
 
 class BudgetCategory(db.Model):
     """User-defined budget categories (expenses or income)"""
@@ -9,8 +27,15 @@ class BudgetCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     category_type = db.Column(db.String(20), nullable=False)  # 'expense' or 'income'
-    parent_id = db.Column(db.Integer, db.ForeignKey('budget_categories.id'), nullable=True) # For subcategories 
+    
+    # === OLD fields (keep for migration, remove later) ===
+    parent_id = db.Column(db.Integer, db.ForeignKey('budget_categories.id'), nullable=True)
     is_parent_only = db.Column(db.Boolean, default=False)
+    
+    # === NEW fields for groups ===
+    group_id = db.Column(db.Integer, db.ForeignKey('category_groups.id'), nullable=False)
+    group = db.relationship('CategoryGroup', back_populates='categories')
+    
     sort_order = db.Column(db.Integer, default=0)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -19,10 +44,10 @@ class BudgetCategory(db.Model):
     planned_amounts = db.relationship('PlannedAmount', back_populates='category', cascade='all, delete-orphan')
     transactions = db.relationship('Transaction', back_populates='category')
 
-    # Parent/child relationship
+    # Parent/child relationship (old style – keep for data migration)
     children = db.relationship('BudgetCategory', 
-                              backref=db.backref('parent', remote_side=[id]),
-                              foreign_keys=[parent_id]) # changes subcategories to reference parent_id instead of id
+                               backref=db.backref('parent', remote_side=[id]),
+                               foreign_keys=[parent_id])
     
     __table_args__ = (
         CheckConstraint(category_type.in_(['expense', 'income']), name='valid_category_type'),
@@ -33,9 +58,11 @@ class BudgetCategory(db.Model):
             'id': self.id,
             'name': self.name,
             'category_type': self.category_type,
-            'parent_id': self.parent_id,  # NEW
-            'parent_name': self.parent.name if self.parent else None,  # Add this
+            'parent_id': self.parent_id,
+            'parent_name': self.parent.name if self.parent else None,
             'is_parent_only': self.is_parent_only,
+            'group_id': self.group_id,
+            'group_name': self.group.name if self.group else None,
             'sort_order': self.sort_order,
             'is_active': self.is_active
         }
@@ -50,7 +77,6 @@ class PayPeriod(db.Model):
     end_date = db.Column(db.Date, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Relationships
     planned_amounts = db.relationship('PlannedAmount', back_populates='pay_period', cascade='all, delete-orphan')
     
     def to_dict(self):
@@ -74,7 +100,6 @@ class PlannedAmount(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Relationships
     category = db.relationship('BudgetCategory', back_populates='planned_amounts')
     pay_period = db.relationship('PayPeriod', back_populates='planned_amounts')
     
@@ -92,12 +117,6 @@ class PlannedAmount(db.Model):
             'is_cleared': self.is_cleared,
             'due_date': self.due_date.isoformat() if self.due_date else None
         }
-    
-        # Only include due_date if the column exists
-        #if hasattr(self, 'due_date'):
-        #    result['due_date'] = self.due_date.isoformat() if self.due_date else None
-    
-        #return result
 
 
 class Transaction(db.Model):
@@ -114,7 +133,6 @@ class Transaction(db.Model):
     notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Relationships
     category = db.relationship('BudgetCategory', back_populates='transactions')
     matched_planned = db.relationship('PlannedAmount', foreign_keys=[matched_planned_id])
     
@@ -137,12 +155,11 @@ class CategoryRule(db.Model):
     __tablename__ = 'category_rules'
     
     id = db.Column(db.Integer, primary_key=True)
-    pattern = db.Column(db.String(100), nullable=False)  # Text pattern to match
+    pattern = db.Column(db.String(100), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('budget_categories.id'), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Relationships
     category = db.relationship('BudgetCategory')
     
     def to_dict(self):
@@ -163,11 +180,10 @@ class RecurringTemplate(db.Model):
     name = db.Column(db.String(100), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('budget_categories.id'), nullable=False)
     amount = db.Column(db.Numeric(10, 2), nullable=False)
-    frequency = db.Column(db.String(20), nullable=False)  # 'every_period', 'monthly', 'bi_monthly'
+    frequency = db.Column(db.String(20), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Relationships
     category = db.relationship('BudgetCategory')
     
     def to_dict(self):

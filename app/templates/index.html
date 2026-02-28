@@ -145,34 +145,29 @@
                     <span class="toggle-icon">▼</span>
                 </div>
                 <div class="section-content">
-                    <!-- Toolbar – all four buttons in one row, wrapped on small screens -->
-                    <div class="category-toolbar mb-4">
-                        <div class="d-flex flex-wrap gap-2 justify-content-start">
-                            <button class="btn btn-sm btn-primary" id="addExpenseCategoryBtn">
-                                Add Expense Category
-                            </button>
-                            <button class="btn btn-sm btn-info" id="addExpenseGroupBtn">   <!-- using btn-info as example -->
-                                Add Expense Group
-                            </button>
-                            <button class="btn btn-sm btn-primary" id="addIncomeCategoryBtn">
-                                Add Income Category
-                            </button>
-                            <button class="btn btn-sm btn-info" id="addIncomeGroupBtn">
-                                Add Income Group
-                            </button>
+                    <!-- Expense Section with integrated title + buttons on right -->
+                    <div class="category-section expense-section mb-4">
+                        <div class="category-header d-flex justify-content-between align-items-center px-3 py-2">
+                            <h4 class="mb-0 flex-grow-0 flex-shrink-1">Expense Categories</h4>
+                            <div class="d-flex gap-2 flex-nowrap ms-auto">
+                                <button class="btn btn-sm category-btn" id="addExpenseCategoryBtn">Add Expense Category</button>
+                                <button class="btn btn-sm category-btn-secondary" id="addExpenseGroupBtn">Add Expense Group</button>
+                            </div>
                         </div>
+                        <div id="expenseCategoriesList" class="p-2 d-flex flex-column gap-2"></div>
                     </div>
-                    <!-- Expense Categories – full width -->
-                    <div class="category-section mb-5">
-                        <h4 class="mb-3">Expense Categories</h4>
-                        <div id="expenseCategoriesList" class="d-flex flex-column gap-2"></div>
+                    <!-- Income Section with integrated title + buttons on right -->
+                    <div class="category-section income-section">
+                        <div class="category-header d-flex justify-content-between align-items-center px-3 py-2">
+                        <h4 class="m-0">Income Categories</h4>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm category-btn" id="addIncomeCategoryBtn">Add Income Category</button>
+                            <button class="btn btn-sm category-btn-secondary" id="addIncomeGroupBtn">Add Income Group</button>
+                        </div>
+                        </div>
+                        <div id="incomeCategoriesList" class="p-2 d-flex flex-column gap-2"></div>
                     </div>
 
-                    <!-- Income Categories – full width, below expenses -->
-                    <div class="category-section">
-                        <h4 class="mb-3">Income Categories</h4>
-                        <div id="incomeCategoriesList" class="d-flex flex-column gap-2"></div>
-                    </div>
                 </div>
             </div>
             <!-- Auto-Categorization Rules -->
