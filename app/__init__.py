@@ -4,7 +4,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
 
+db = SQLAlchemy()
+migrate = Migrate()
+
+# Now safe to import models (no circularity risk)
+#from .models import BudgetCategory, CategoryGroup   # or import .models
+
 # Do NOT define db or migrate here anymore
+
+
+
 
 def create_app():
     app = Flask(__name__)
@@ -18,21 +27,26 @@ def create_app():
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
     # Initialize extensions **inside** the factory
-    db = SQLAlchemy()
+
+
+
     db.init_app(app)
-    
-    migrate = Migrate()
     migrate.init_app(app, db)
 
-    # Now safe to import models (no circularity risk)
-    from .models import Category, CategoryGroup   # or import .models
+
 
     # Register blueprints
     from .routes import main
     app.register_blueprint(main)
     
     # Optional: attach db and migrate to app for easy access elsewhere
-    app.db = db
-    app.migrate = migrate
+    #app.db = db
+    #app.migrate = migrate
+
+    with app.app_context():
+        from . import models  # Import models here to avoid circular imports
+        # Create tables if they don't exist
+        db.create_all()
+        print("Database tables created successfully!")
     
     return app

@@ -1,3 +1,4 @@
+from app import db
 from datetime import datetime
 from sqlalchemy import CheckConstraint
 
@@ -196,3 +197,9 @@ class RecurringTemplate(db.Model):
             'frequency': self.frequency,
             'is_active': self.is_active
         }
+    
+# ────────────────────────────────────────────────
+# IMPORTANT: Force mapper configuration after all classes are defined
+# This resolves string refs like 'CategoryGroup' and 'BudgetCategory'
+#db.configure_mappers()
+# ────────────────────────────────────────────────

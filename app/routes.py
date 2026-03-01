@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, send_file
-from app import db
+#from app import db
 from app.models import BudgetCategory, PayPeriod, PlannedAmount, Transaction, CategoryRule, RecurringTemplate
 from datetime import datetime, timedelta
 from decimal import Decimal
