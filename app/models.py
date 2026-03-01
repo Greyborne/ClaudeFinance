@@ -1,11 +1,12 @@
 # Marker for Grok 3-1-2026 08:28am
-from app import db
+#from app import db
+from .extensions import db
 from datetime import datetime
 from sqlalchemy import CheckConstraint
 
 # No top-level "from app import db" — avoids circular import
 
-class CategoryGroup:
+class CategoryGroup(db.Model):
     """Groups for organizing categories (replaces old parent-only hack)"""
     __tablename__ = 'category_groups'
     
@@ -202,5 +203,5 @@ class RecurringTemplate(db.Model):
 # ────────────────────────────────────────────────
 # IMPORTANT: Force mapper configuration after all classes are defined
 # This resolves string refs like 'CategoryGroup' and 'BudgetCategory'
-#db.configure_mappers()
+db.configure_mappers()
 # ────────────────────────────────────────────────
