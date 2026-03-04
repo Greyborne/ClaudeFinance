@@ -43,6 +43,7 @@ export async function loadAllData() {
     fetchData('/category-rules'),
     fetchData('/recurring-templates'),
     fetchData('/planned-amounts'),
+    // fetchData('/category-groups')  // NEW: Load category groups
   ]);
   
   return {
@@ -51,6 +52,7 @@ export async function loadAllData() {
     payPeriods,
     categoryRules,
     recurringTemplates,
-    plannedAmounts
+    plannedAmounts,
+    categoryGroups: await fetchData('/category-groups')  // NEW: Load category groups
   };
 }

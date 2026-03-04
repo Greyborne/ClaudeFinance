@@ -1,6 +1,6 @@
+from app import db
 from flask import Blueprint, render_template, request, jsonify, send_file
-#from app import db
-from app.models import BudgetCategory, PayPeriod, PlannedAmount, Transaction, CategoryRule, RecurringTemplate
+from app.models import BudgetCategory, PayPeriod, PlannedAmount, Transaction, CategoryRule, RecurringTemplate, CategoryGroup
 from datetime import datetime, timedelta
 from decimal import Decimal
 import pandas as pd
@@ -66,7 +66,19 @@ def manage_categories():
         
         return jsonify(category.to_dict()), 201
 
-
+@main.route('/api/categories/<int:category_id>/sort', methods=['PUT'])
+def update_category_sort(category_id):
+    category = BudgetCategory.query.get_or_404(category_id)
+    data = request.get_json()
+    new_sort_order = data.get('sort_order')
+    
+    if new_sort_order is None:
+        return jsonify({'error': 'sort_order required'}), 400
+    
+    category.sort_order = new_sort_order
+    db.session.commit()
+    
+    return jsonify(category.to_dict()), 200
 
 @main.route('/api/categories/<int:category_id>', methods=['PUT', 'DELETE'])
 def update_category(category_id):
@@ -122,6 +134,11 @@ def update_category(category_id):
         category.is_active = False
         db.session.commit()
         return '', 204
+
+@main.route('/api/category-groups', methods=['GET'])
+def get_category_groups():
+    groups = CategoryGroup.query.all()
+    return jsonify([g.to_dict() for g in groups])
 
 # Helper function to prevent circular hierarchies
 def is_descendant(potential_parent, category):

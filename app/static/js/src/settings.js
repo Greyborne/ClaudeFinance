@@ -2,6 +2,7 @@
 
 import { state } from './state.js';
 import { fetchData } from './api.js';  // For delete/edit
+import { renderCategories } from './categories.js';
 
 
 
@@ -26,53 +27,60 @@ function renderCategoryRules() {
   rulesList.addEventListener('click', handleRuleAction);
 }
 
-function renderCategoryLists() {
-    const expensesList = document.getElementById('expenseCategoriesList');
-    const incomesList = document.getElementById('incomeCategoriesList');
-    
-    expensesList.innerHTML = '';
-    incomesList.innerHTML = '';
-    
-    // Get top-level categories (no parent)
-    const topLevelExpenses = state.categories.filter(c => 
-        c.category_type === 'expense' && !c.parent_id
-    );
-    const topLevelIncome = state.categories.filter(c => 
-        c.category_type === 'income' && !c.parent_id
-    );
-    
-    // Render expenses hierarchically
-    topLevelExpenses.forEach(category => {
-        renderCategoryWithChildren(category, expensesList, 'expense');
-    });
-    
-    // Render income hierarchically
-    topLevelIncome.forEach(category => {
-        renderCategoryWithChildren(category, incomesList, 'income');
-    });
+
+function renderGroupWithCategories(group, container, type) {
+  const groupDiv = document.createElement('div');
+  groupDiv.className = 'group-item';
+  groupDiv.innerHTML = `
+    <div class="group-header">
+      <h5>${group.name}</h5>
+      <div class="group-actions">
+        <button class="btn btn-sm btn-outline-primary" onclick="addCategoryToGroup(${group.id})">Add Category</button>
+        <button class="btn btn-sm btn-secondary" onclick="editGroup(${group.id})">Edit Group</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteGroup(${group.id})">Delete Group</button>
+      </div>
+    </div>
+    <div class="category-list" id="group-${group.id}-list"></div>
+  `;
+  container.appendChild(groupDiv);
+
+  const list = groupDiv.querySelector('.category-list');
+
+  // Get categories in this group
+  const categoriesInGroup = state.categories.filter(c => 
+    c.group_id === group.id && c.category_type === type
+  );
+
+  // Sort by sort_order
+  categoriesInGroup.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+  categoriesInGroup.forEach(category => {
+    const div = document.createElement('div');
+    div.className = 'category-item';
+    div.innerHTML = `
+      <div class="sort-arrows">
+        <button class="btn btn-sm sort-up">↑</button>
+        <button class="btn btn-sm sort-down">↓</button>
+      </div>
+      <span class="name">${category.name}</span>
+      <span class="count">(${category.transactionCount || 0})</span>
+      <div class="actions">
+        <button class="btn btn-sm btn-secondary" onclick="editCategory(${category.id})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteCategory(${category.id})">Delete</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
 }
 
-function renderCategoryWithChildren(category, container, type, level = 0) {
-  const div = document.createElement('div');
-  div.className = 'category-item';
-  div.style.marginLeft = `${level * 20}px`;
-  div.innerHTML = `
-    <div class="sort-controls">
-      <button class="btn btn-sm btn-outline-secondary move-up" data-id="${category.id}">↑</button>
-      <button class="btn btn-sm btn-outline-secondary move-down" data-id="${category.id}">↓</button>
-    </div>
-    <span>${level > 0 ? '└─ ' : ''}${category.name}</span>
-    <span class="sort-order">(${category.sort_order || 0})</span>
-    <div class="category-actions">
-      <button class="btn btn-sm btn-secondary edit-btn" data-id="${category.id}">Edit</button>
-      <button class="btn btn-sm btn-danger delete-btn" data-id="${category.id}">Delete</button>
-    </div>
-  `;
-  container.appendChild(div);
-
-  // Children...
-  const children = state.categories.filter(c => c.parent_id === category.id);
-  children.forEach(child => renderCategoryWithChildren(child, container, type, level + 1));
+// NEW: Load groups from API (add this to initializeState or a new function)
+export async function loadCategoriesAndGroups() {
+  const [categories, groups] = await Promise.all([
+    fetchData('/categories'),
+    fetchData('/category-groups')   // NEW endpoint you need to add in backend
+  ]);
+  state.categories = categories;
+  state.categoriesGroups = groups;
 }
 
 function handleRuleAction(e) {
@@ -147,7 +155,7 @@ async function applyTemplate(id) {
 }
 
 export function renderSettings() {
-  renderCategoryLists(); //- moved to categories.js
+  renderCategories(); //- moved to categories.js
   renderCategoryRules();
   renderRecurringTemplates();
 }

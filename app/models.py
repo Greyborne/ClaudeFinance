@@ -21,6 +21,14 @@ class CategoryGroup(db.Model):
 
     def __repr__(self):
         return f'<CategoryGroup {self.name} ({self.category_type})>'
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'category_type': self.category_type,
+            'sort_order': self.sort_order
+        }
 
 
 class BudgetCategory(db.Model):

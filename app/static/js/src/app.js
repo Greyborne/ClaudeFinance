@@ -77,7 +77,12 @@ function switchTab(tabName) {
   } else if (tabName === 'transactions') {
     initializeTransactions();  // From transactions.js
   } else if (tabName === 'settings') {
-    renderSettings();  // From settings.js
+    if (state.categoriesGroups && state.categoriesGroups.length > 0) {
+      renderSettings();
+    } else {
+      // optional: trigger reload or show loading
+      console.log('Waiting for data before rendering settings');
+    }
   }
 }
 
